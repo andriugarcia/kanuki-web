@@ -1,0 +1,28 @@
+{
+  "name": "kanuki",
+  "version": "1.0.0",
+  "description": "My lovely Nuxt.js project",
+  "author": "versy",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxtjs/apollo": "^4.0.0-rc17",
+    "@nuxtjs/pwa": "^3.0.0-0",
+    "@nuxtjs/router": "^1.5.0",
+    "apollo-cache-inmemory": "^1.6.3",
+    "graphql-tag": "^2.10.1",
+    "kanuki-article": "^0.2.3",
+    "nuxt": "^2.0.0",
+    "vue-masonry-css": "^1.0.3"
+  },
+  "devDependencies": {
+    "@nuxtjs/vuetify": "^1.0.0",
+    "pug": "^2.0.3",
+    "pug-plain-loader": "^1.0.0"
+  }
+}

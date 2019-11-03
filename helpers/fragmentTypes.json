@@ -1,0 +1,1 @@
+{"__schema":{"types":[{"kind":"UNION","name":"Searchable","possibleTypes":[{"name":"Card"},{"name":"Pill"},{"name":"User"}]},{"kind":"UNION","name":"TimelineItem","possibleTypes":[{"name":"Publication"},{"name":"Card"}]}]}}
