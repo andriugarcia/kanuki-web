@@ -1,9 +1,4 @@
 import colors from 'vuetify/es5/util/colors'
-import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
-import schema from './helpers/fragmentTypes.json'
-const fragmentMatcher = new IntrospectionFragmentMatcher({
-    introspectionQueryResultData: schema
-  })
 
 export default {
   mode: 'universal',
@@ -40,33 +35,7 @@ export default {
   ],
 
   apollo: {
-    tokenName: 'yourApolloTokenName', // optional, default: apollo-token
-    cookieAttributes: {
-      /**
-        * Define when the cookie will be removed. Value can be a Number
-        * which will be interpreted as days from time of creation or a
-        * Date instance. If omitted, the cookie becomes a session cookie.
-        */
-      expires: 7, // optional, default: 7 (days)
-
-      /**
-        * Define the path where the cookie is available. Defaults to '/'
-        */
-      path: '/', // optional
-      /**
-        * Define the domain where the cookie is available. Defaults to
-        * the domain of the page where the cookie was created.
-        */
-      domain: 'example.com', // optional
-
-      /**
-        * A Boolean indicating if the cookie transmission requires a
-        * secure protocol (https). Defaults to false.
-        */
-      secure: false,
-    },
     includeNodeModules: true, // optional, default: false (this includes graphql-tag for node_modules folder)
-    authenticationType: 'Basic', // optional, default: 'Bearer'
     // (Optional) Default 'apollo' definition
     defaultOptions: {
       $query: {
@@ -76,16 +45,7 @@ export default {
     },
 
     clientConfigs: {
-      default: {
-        httpEndpoint: 'http://kanuki-gql.herokuapp.com/',
-        httpLinkOptions: {
-          credentials: 'same-origin'
-        },
-        tokenName: 'apollo-token', // optional
-        persisting: false, // Optional
-        websocketsOnly: false, // Optional
-        // cache: new InMemoryCache({ fragmentMatcher })
-      },
+      default: '~/apollo/config.js'
     }
   },
   /*

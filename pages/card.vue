@@ -1,87 +1,203 @@
 <template lang="pug">
     #card
-        #mobile(v-if="!$vuetify.breakpoint.mdAndUp")
+        #mobile(v-if="isMounted && !$vuetify.breakpoint.mdAndUp")
             v-layout.pa-3(align-center)
-                v-btn(icon)
+                v-btn(icon, @click="$router.go(-1)")
                     v-icon mdi-arrow-left
-                v-chip(color="kblue", small, dark)
-                    .font-weight-bold u/{{card.author.name}}
+                v-chip.pr-0(:color="pill.name ? 'kred' : 'kblue'", small, dark)
+                    .font-weight-bold {{ pill.name ? `p/${pill.name}` : `u/${card.author.name}`}}
+                    follow.ml-1(:name="pill.name || card.author.name", :isUser="!pill.name")
                 v-spacer
-                v-btn(text) Spread
-            content(:content="card.content")
+                v-btn(text, @click="spreadDialog = true") Spread
+            client-only
+                v-layout(slot="placeholder", style="height: 240px", justify-center, align-center)
+                    v-progress-circular(:size="100", :width="8", color="#4F9CD1", indeterminate)
+                component.rounded(:is="dynamicTemplate", :content="content", :user="userParam", :edit="edit", :card="cardParam", :key="rerender")
             v-card.pa-2(ref="card", :class="{'margintop': !expansion, 'fullscreen': expansion}", style="border-radius: 24px 24px 0 0")
                 #touch.pb-3(ref="touch")
                     v-layout(align-center)
-                        v-btn(icon, large)
+                        v-btn(icon, large, @click="previous")
                             v-icon mdi-arrow-left
                         .ml-2
-                            .font-weight-bold card
-                            div u/{{card.author.name}}
+                            .font-weight-bold {{card.title}}
+                            .hover.rounded(@click.stop="$router.push({path: `/u/${card.author.name}`})") u/{{card.author.name | truncate}}
                         v-spacer
-                        like-button
-                        v-btn(icon, large)
+                        like-button(:name="card.name", :author="card.author.name")
+                        v-btn(icon, large, @click="next")
                             v-icon mdi-arrow-right
-                    bottom-post-bar(:comments="card.commentsCount", :karma="card.karma", :share="card.shareCount")
+                    bottom-post-bar(:card="card")
                 #scroll(ref="scroll")
                     .pa-3 {{card.description}}
-                    comments(v-if="expansion")
+                    comments(v-if="expansion", :card="card", :pill="pill.name ? pill.name : ''")
         #desktop(v-else)
             v-layout
                 v-flex(xs8)
-                    v-layout.pa-3(align-center)
-                        v-btn(icon)
+                    v-layout.mt-6(align-center)
+                        v-btn(icon, @click="$router.go(-1)")
                             v-icon mdi-arrow-left
-                        v-chip(color="kblue", small, dark)
-                            .font-weight-bold u/{{card.author.name}}
+                        v-chip.pr-0(:color="pill.name ? 'kred' : 'kblue'", small, dark, @click="toParent")
+                            .font-weight-bold {{ pill.name ? `p/${pill.name}` : `u/${card.author.name}` | truncate}}
+                            follow.ml-1(:name="pill.name || card.author.name", :isUser="!pill.name")
                         v-spacer
-                        v-btn(text) Spread
-                    content(:content="card.content")
-                v-flex.ma-1(xs4, style="padding-top: 72px")
+                        v-btn(text, small, @click="spreadDialog = true") 
+                            v-icon(small) mdi-source-fork
+                            div Spread
+                    client-only(:key="rerender")
+                        v-layout(slot="placeholder", justify-center, align-center)
+                            v-skeleton-loader(type="card", style="width: 100%")
+                            //- v-progress-circular(:size="100", :width="8", color="#4F9CD1", indeterminate)
+                        component.rounded.mt-5(:is="dynamicTemplate", :content="content", :user="userParam", :edit="edit", :card="cardParam")
+                v-flex.ma-1.mx-2(xs4, style="padding-top: 72px")
                     v-card.pa-3(style="border-radius: 24px")
                         v-layout(align-center)
-                            v-btn(icon, large)
+                            v-btn(icon, large, @click="previous")
                                 v-icon mdi-arrow-left
                             .ml-2
-                                .font-weight-bold card
-                                div u/{{card.author.name}}
+                                .font-weight-bold {{card.title | truncate}}
+                                .hover.rounded(@click.stop="$router.push({path: `/u/${card.author.name}`})") u/{{card.author.name | truncate}}
                             v-spacer
-                            like-button
-                            v-btn.ml-2(icon, large)
+                            v-btn.mr-2(v-if="card.author.name == user.name", fab, dark, small, :color="edit ? 'black' : 'green'", @click="editAction")
+                                v-icon(small) {{edit ? 'mdi-content-save' : 'mdi-pencil'}}
+                            like-button(:name="card.name", :author="card.author.name")
+                            v-btn.ml-2(icon, large, @click="next")
                                 v-icon mdi-arrow-right
-                        bottom-post-bar(:comments="card.commentsCount", :karma="card.karma", :share="card.shareCount")
-                    comments
+                        bottom-post-bar.mt-1(:card="card")
+                    .my-4.ml-2(v-if="!edit") {{card.description}}
+                    v-textarea.mt-4(v-else, v-model="card.description", placeholder="Descripción", solo, rounded)
+                    card-pills(:publications="card.publications")
+                    comments(:card="card", :pill="pill.name ? pill.name : ''")
+        #spread
+            v-dialog(v-model="spreadDialog", v-if="$vuetify.breakpoint.mdAndUp", width="500")
+                spread(:card="card")
+            v-bottom-sheet(v-else, v-model="spreadDialog")
+                spread(:card="card")
 </template>
 
 <script>
 import LikeButton from "@/components/LikeButton"
 import BottomPostBar from "@/components/BottomPostBar"
 import gql from "graphql-tag"
+import Follow from "@/components/Follow"
+import truncate from "@/helpers/truncate"
+import CardPills from "@/components/CardPills"
+
+import externalComponent from '@/helpers/external-component';
 
 export default {
 
     async asyncData({app, params}) {
+        console.log("Getting Data")
         let client = app.apolloProvider.defaultClient
 
-        let data = await client.query({
-            query: gql`query GetCard($name: String!, $author: String!) {
+        let query
+        if (params.pill) {
+            query = gql`query GetPublication($name: String!, $author: String!, $pill: String!) {
+                getPublication(card: $name, cardAuthor: $author, pill: $pill) {
+                    card {
+                        name,
+                        title,
+                        description,
+                        karma,
+                        type,
+                        shareCount,
+                        commentsCount,
+                        vote,
+                        publications {
+                            pill {
+                                name, avatar, banner, description, followersCount
+                            }
+                        },
+                        comments {
+                            id,
+                            text,
+                            karma,
+                            author {
+                                name,
+                                avatar
+                            },
+                            pill {
+                                name
+                            },
+                            card {
+                                name
+                            },
+                            subComments {
+                                id,
+                                text,
+                                karma,
+                                author {
+                                    name,
+                                    avatar
+                                },
+                                pill {
+                                    name
+                                },
+                                card {
+                                    name
+                                },
+
+                            }
+    
+                        },
+                        content,
+                        author {
+                            name
+                        }
+                    },
+
+                    pill {
+                        name
+                    }
+                }
+            }`
+        }
+
+        else {
+            query = gql`query GetCard($name: String!, $author: String!) {
                 getCard(name: $name, author: $author) {
                     name,
                     title,
+                    description,
                     karma,
+                    vote,
                     type,
                     shareCount,
                     commentsCount,
+                    karma,
+                    publications {
+                        pill {
+                            name, avatar, banner, description, followersCount
+                        }
+                    },
                     comments {
                         id,
                         text,
+                        karma,
                         author {
-                            name
+                            name,
+                            avatar
                         },
                         pill {
                             name
                         },
                         card {
                             name
+                        },
+                        subComments {
+                            id,
+                            text,
+                            karma,
+                            author {
+                                name,
+                                avatar
+                            },
+                            pill {
+                                name
+                            },
+                            card {
+                                name
+                            },
+
                         }
 
                     },
@@ -90,16 +206,26 @@ export default {
                         name
                     }
                 }
-            }`,
+            }`
+        }
 
+        let {data} = await client.query({
+            query,
             variables: {
                 name: params.card,
                 author: params.author,
+                pill: params.pill
             }
         })
 
+        let card = typeof data.getPublication != 'undefined' ? data.getPublication.card : data.getCard
+        let pill = typeof data.getPublication != 'undefined' ? data.getPublication.pill : {}
+
+        console.log(card.comments)
+
         return {
-            card: data.data.getCard
+            card,
+            pill
         }
     },
 
@@ -107,18 +233,248 @@ export default {
         LikeButton,
         BottomPostBar,
         Comments: () => import("@/components/Comments"),
-        Content: () => import("kanuki-article")
+        Spread: () => import("@/layouts/spread"),
+        CardPills,
+        Follow
+    },
+
+    computed: {
+        content: {
+            get() {
+                return JSON.parse(this.card.content)
+            },
+
+            set(value) {
+                this.card.content = JSON.stringify(value)
+            }
+        },
+
+        user() {
+            return this.$store.state.auth.user
+        },
+
+        dynamicTemplate() {
+            console.log("Getting card type: ", this.card.type)
+            return () => externalComponent(`http://localhost:8200/kanuki-${this.card.type}/kanuki-${this.card.type}.umd.min.js`)
+        },
+
+        isMounted() {
+            return this.$store.state.core.isMounted
+        },
+
+        cardParam() {
+            return {
+                name: this.card.name,
+                title: this.card.title,
+                karma: this.card.karma,
+                locale: this.card.locale,
+                shareCount: this.card.shareCount,
+                likesCount: this.card.likesCount,
+                description: this.card.description
+            }
+        },
+
+        userParam() {
+            return {
+                name: this.card.author.name,
+                avatar: this.card.author.avatar,
+                locale: this.card.author.locale,
+                email: this.card.author.email
+            }
+        }
     },
 
     data() {
         return {
             expansion: false,
             hide: false,
-            card: {}
+            card: {},
+            edit: false,
+            rerender: 0,
+            spreadDialog: false
+        }
+    },
+
+    filters: {
+        truncate(value) {
+            let str = value.toString()
+            return truncate(str, 28)
         }
     },
 
     methods: {
+        async editAction() {
+            if (this.edit) {
+                await this.$apollo.mutate({
+                    mutation: gql`mutation EditCard($name: String!, $description: String, $content: String) {
+                        editCard(name: $name, description: $description, content: $content) {
+                            name
+                        }
+                    }`,
+
+                    variables: {
+                        name: this.card.name,
+                        description: this.card.description,
+                        content: JSON.stringify(this.content)
+                    }
+                })
+
+                this.edit = false
+            }
+            else {
+                this.edit = true
+            }
+        },
+
+        toParent() {
+            const path = typeof this.pill.name != 'undefined' ? `/p/${this.pill.name}` : `/u/${this.card.author.name}`
+            this.$router.push({path})
+        },
+
+        async next() {
+            let query
+
+            console.log()
+            if (this.existPill()) {
+                query = gql`query NextPublication($name: String!, $author: String!, $pill: String!) {
+                    nextPublication(card: $name, cardAuthor: $author, pill: $pill) {
+                        card {
+                            name, title, description, karma, type, shareCount, commentsCount,
+                            comments { id, text,
+                                author { name },
+                                pill { name },
+                                card {  name }
+                            },
+                            content,
+                            author { name }
+                        },
+                        pill { name }
+                    }
+                }`
+            }
+            else {
+                console.log(this.card.name, this.card.author.name)
+                query = gql`query NextCard($name: String!, $author: String!) {
+                    nextCard(name: $name, author: $author) {
+                        name, title, description, karma, type, shareCount, commentsCount,
+                        comments { id, text,
+                            author { name },
+                            pill { name },
+                            card {  name }
+                        },
+                        content,
+                        author { name }
+                    }
+                }`
+
+            }
+
+            let {data} = await this.$apollo.query({
+                query,
+                variables: {
+                    name: this.card.name,
+                    author: this.card.author.name,
+                    pill: this.pill ? this.pill.name : ""
+                }
+            })
+
+            if (typeof data.nextPublication == "object" && data.nextPublication == null) {
+                return this.$router.push({path: `/p/${this.pill.name}`})
+            }
+            
+            if (typeof data.nextCard == "object" && data.nextCard == null) {
+                return this.$router.push({path: `/u/${this.card.author.name}`})
+            }
+
+            let card = typeof data.nextPublication != 'undefined' ? data.nextPublication.card : data.nextCard
+            let pill = typeof data.nextPublication != 'undefined' ? data.nextPublication.pill : {}
+            this.card = card
+            this.pill = pill
+
+            this.rerender++
+
+            history.replaceState(
+                {},
+                null,
+                this.existPill() ? `/p/${pill.name}/${card.author.name}/${card.name}` : `/u/${card.author.name}/${card.name}`
+
+            )
+
+        },
+
+        async previous() {
+            let query
+
+            if (this.existPill()) {
+                query = gql`query PreviousPublication($name: String!, $author: String!, $pill: String!) {
+                    previousPublication(card: $name, cardAuthor: $author, pill: $pill) {
+                        card {
+                            name, title, description, karma, type, shareCount, commentsCount,
+                            comments { id, text,
+                                author { name },
+                                pill { name },
+                                card {  name }
+                            },
+                            content,
+                            author { name }
+                        },
+                        pill { name }
+                    }
+                }`
+            }
+            else {
+                
+                query = gql`query PreviousCard($name: String!, $author: String!) {
+                    previousCard(name: $name, author: $author) {
+                        name, title, description, karma, type, shareCount, commentsCount,
+                        comments { id, text,
+                            author { name },
+                            pill { name },
+                            card {  name }
+                        },
+                        content,
+                        author { name }
+                    }
+                }`
+
+            }
+
+            let {data} = await this.$apollo.query({
+                query,
+                variables: {
+                    name: this.card.name,
+                    author: this.card.author.name,
+                    pill: this.pill ? this.pill.name : ""
+                }
+            })
+
+            if (typeof data.previousPublication == "object" && data.previousPublication == null) {
+                return this.$router.push({path: `/p/${this.pill.name}`})
+            }
+            
+            if (typeof data.previousCard == "object" && data.previousCard == null) {
+                return this.$router.push({path: `/u/${this.card.author.name}`})
+            }
+
+            let card = typeof data.previousPublication != 'undefined' ? data.previousPublication.card : data.previousCard
+            let pill = typeof data.previousPublication != 'undefined' ? data.previousPublication.pill : {}
+            this.card = card
+            this.pill = pill
+
+            this.rerender--
+
+            history.replaceState(
+                {},
+                null,
+                this.existPill() ? `/p/${pill.name}/${card.author.name}/${card.name}` : `/u/${card.author.name}/${card.name}`
+
+            )
+        },
+
+        existPill() {
+            return typeof this.pill.name != 'undefined'
+        },
+
         expand(dir) {
             this.expansion = dir == 1
         },
@@ -215,6 +571,14 @@ export default {
     },
 
     mounted() {
+        let heds = document.getElementsByTagName("head")
+        let link = document.createElement("link")
+        link.href = `http://localhost:8200/kanuki-${this.card.type}/kanuki-${this.card.type}.css`
+        link.rel = "stylesheet"
+        link.type = "text/css"
+
+        heds[0].appendChild(link)
+
         window.scrollTo(0, 0)
         window.addEventListener('scroll', this.handleScroll);
         const touch = this.$refs.touch
@@ -223,6 +587,7 @@ export default {
         const scroll = this.$refs.scroll
         scroll.addEventListener('touchstart', this.handleScrollStart, false);        
         scroll.addEventListener('touchmove', this.handleScrollMove, false);
+
     }
 }
 </script>

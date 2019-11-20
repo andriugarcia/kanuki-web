@@ -2,13 +2,13 @@
     v-layout(justify-space-around)
         v-flex(xs3)
             v-btn(text)
-                .mr-1 {{comments}}
+                .mr-1 {{card.commentsCount}}
                 v-icon mdi-comment
         v-flex(xs5)
-            karma(:karma="karma")
+            karma(:card="card")
         v-flex(xs3)
             v-btn(text)
-                .mr-1 {{share}}
+                .mr-1 {{card.shareCount}}
                 v-icon mdi-share-variant
 </template>
 
@@ -20,6 +20,6 @@ export default {
         Karma
     },
 
-    props: ["comments", "karma", "share"]
+    props: ["card"]
 }
 </script>

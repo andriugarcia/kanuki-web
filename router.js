@@ -39,8 +39,13 @@ export function createRouter() {
         component: User
       },
       {
-        name: "Search",
+        name: "Discover",
         path: '/s',
+        component: Search
+      },
+      {
+        name: "Search",
+        path: '/s/:search',
         component: Search
       },
 
