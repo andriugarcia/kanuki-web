@@ -14,6 +14,7 @@ export default {
             pass: ""
         }
     },
+    
     methods: {
         login() {
             this.$store.dispatch("auth/login", {user: this.user, pass: this.pass})

@@ -1,6 +1,6 @@
 <template lang="pug">
     #libraryRouting
-        #library.pa-3
+        #library.pa-3(v-if="autenticate")
             v-layout(align-center)
                 v-icon.pa-1(v-if="routing == ''") mdi-folder-outline
                 v-btn(v-else, icon, @click="routing = ''")
@@ -54,6 +54,9 @@
             created(v-else-if="routing == 'created'")
             published(v-else-if="routing == 'published'")
             following-pills(v-else-if="routing == 'followingPills'")
+        #autenticate.pa-1(v-else)
+            login
+            register.mt-2
 </template>
 
 <script>
@@ -67,11 +70,17 @@ export default {
         created: () => import("@/layouts/created"),
         published: () => import("@/layouts/published"),
         followingPills: () => import("@/layouts/followingPills"),
+        login: () => import("@/components/Login"),
+        register: () => import("@/components/Register"),
     },
 
     computed: {
         user() {
             return this.$store.state.auth.user
+        },
+
+        autenticate() {
+            return !this.isEmpty(this.$store.state.auth.user)
         },
 
         sectionName() {

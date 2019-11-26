@@ -38,26 +38,20 @@ export default {
                 ContentType: file.type
             }
 
-            s3.getSignedUrl('putObject', params, function(err, data) {
-                if (err) {
-                    console.log(err);
-                    return err;
-                } else {
-                    console.log(data)
-                    var options = {
-                        headers: {
+            console.log("Getting signedurl")
+            return axios.get(`https://kanuki-gql.herokuapp.com/getsignedurl?filetype=${file.type}/png&filename=${name}`).then(({data}) => {
+                console.log("Signed URL", data.url)
+                var options = {
+                    headers: {
                         'Content-Type': file.type,
                         'x-amz-acl': 'public-read'
-                        }
-                    };
-
-                    return axios.put(data, file, options).then(() => {
-                        self.saveData(`https://kanuki-storage.fra1.digitaloceanspaces.com/${name}`)
-                    })
-                }
-
-            });
-
+                    }
+                };
+                console.log("Put File")
+                return axios.put(data.url, file, options).then(() => {
+                    self.saveData(`https://kanuki-storage.fra1.digitaloceanspaces.com/${name}`)
+                })
+            })
 
         },
 

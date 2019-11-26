@@ -21,10 +21,7 @@
               notifications
       v-layout(align-start)
         v-flex(xs3, style="padding-top: 64px")
-          library(v-if="user.name")
-          .pa-2(v-else)
-            login
-            register.mt-2
+          library
         v-flex(xs9)
           nuxt-child
     #mobile(v-else)
@@ -44,8 +41,9 @@
             v-icon mdi-folder
           v-spacer
           v-btn(icon, @click="routing = 'notifications'")
-            v-avatar(size="32")
+            v-avatar(v-if="autenticated", size="32")
               img(:src="user.avatar")
+            v-icon(v-else) mdi-account-circle-outline
         v-layout(justify-center, style="position: fixed; bottom: 32px; left: 0; right: 0;")
           v-bottom-sheet(v-model="createDialog")
             template(v-slot:activator="{ on }")
@@ -59,16 +57,13 @@
 import Library from '@/layouts/library'
 import gql from 'graphql-tag'
 import Notifications from "@/layouts/notifications"
-import Login from "@/components/Login"
-import Register from "@/components/Register"
   
 export default {
 
   components: {
     Library,
     CreateSwitch: () => import("@/components/CreateSwitch"),
-    Notifications,
-    Login, Register
+    Notifications
   },
 
   computed: {
@@ -78,6 +73,10 @@ export default {
     
     isMounted() {
       return this.$store.state.core.isMounted
+    },
+
+    autenticated() {
+      return !this.isEmpty(this.$store.state.auth.user)
     }
   },
 
@@ -104,6 +103,7 @@ export default {
 
   async mounted() {
     this.$store.commit("core/setMounted")
+    console.log(this.$store.state.autenticated)
   },
 
 }

@@ -48,14 +48,14 @@ export default {
         },
 
         dynamicTemplate() {
-            return () => externalComponent(`https://kanuki-router.herokuapp.com/kanuki-${this.card.type}/kanuki-${this.card.type}.umd.min.js`)
+            return () => externalComponent(`http://localhost:8200/kanuki-${this.card.type}/kanuki-${this.card.type}.umd.min.js`)
         },
     },
 
     filters: {
         truncate(value) {
             let str = value.toString()
-            return truncate(str, 16)
+            return truncate(str, 13)
         }
     },
 
@@ -112,7 +112,7 @@ export default {
     mounted() {
         let heds = document.getElementsByTagName("head")
         let link = document.createElement("link")
-        link.href = `https://kanuki-router.herokuapp.com/kanuki-${this.card.type}/kanuki-${this.card.type}.css`
+        link.href = `http://localhost:8200/kanuki-${this.card.type}/kanuki-${this.card.type}.css`
         link.rel = "stylesheet"
         link.type = "text/css"
 

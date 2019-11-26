@@ -39,6 +39,7 @@ export default {
   */
   plugins: [
     "~/plugins/masonry",
+    "~/plugins/empty",
     {src: '~/plugins/chart', mode: 'client'}
   ],
 

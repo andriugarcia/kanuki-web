@@ -1,6 +1,6 @@
 <template lang="pug">
     v-layout.hide-scroll(justify-start, style="overflow-x: scroll")
-        v-flex.mt-4(v-for="(publication, i) in card.publications", :key="i", xs8, md5, style="position: relative")
+        v-flex.mt-4(v-for="(publication, i) in card.publications", :key="i", xs5, style="position: relative")
             v-card.ma-1.pointer(style="position: relative; height: 100px;", v-ripple, @click="$router.push({path: `/p/${publication.pill.name}`})")
                 v-img(:src="require('@/assets/images/pill-default-banner.png')", style="width: 100%; height: 24px; object-fit: cover")
                     v-layout.mr-1(justify-end)

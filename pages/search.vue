@@ -6,7 +6,7 @@
                     v-icon mdi-arrow-left
                 v-text-field.mx-6(outlined, dark, rounded, dense, hide-details, color="white", placeholder="Buscar", append-icon="mdi-magnify")
             h1.mx-3(style="margin-top: 56px; font-size: 1.4em") {{$route.params.search ? `Resultados de ${$route.params.search}` : 'Recomendados'}}
-            masonry(:cols="{default: 3}")
+            //- masonry(:cols="{default: 3}")
                 v-card.ma-2.pa-1(v-for="(tag, i) in categories", :key="i", :color="tag.color", dark)
                     v-layout.my-6(justify-center)
                         v-icon(x-large) mdi-pill

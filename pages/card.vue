@@ -4,14 +4,14 @@
             v-layout.pa-3(align-center)
                 v-btn(icon, @click="$router.go(-1)")
                     v-icon mdi-arrow-left
-                v-chip.pr-0(:color="pill.name ? 'kred' : 'kblue'", small, dark)
-                    .font-weight-bold {{ pill.name ? `p/${pill.name}` : `u/${card.author.name}`}}
+                v-chip.pr-0(:color="pill.name ? 'kred' : 'kblue'", small, dark, @click="toParent")
+                    .font-weight-bold {{ pill.name ? `p/${pill.name}` : `u/${card.author.name}` | truncateChip}}
                     follow.ml-1(:name="pill.name || card.author.name", :isUser="!pill.name")
                 v-spacer
                 v-btn(text, @click="spreadDialog = true") Spread
             client-only
-                v-layout(slot="placeholder", style="height: 240px", justify-center, align-center)
-                    v-progress-circular(:size="100", :width="8", color="#4F9CD1", indeterminate)
+                v-layout(slot="placeholder", justify-center, align-center)
+                    v-skeleton-loader(type="card", style="width: 100%")
                 component.rounded(:is="dynamicTemplate", @save="save", :content="content", :user="userParam", :edit="edit", :card="cardParam", :key="rerender")
             v-card.pa-2(ref="card", :class="{'margintop': !expansion, 'fullscreen': expansion}", style="border-radius: 24px 24px 0 0")
                 #touch.pb-3(ref="touch")
@@ -22,12 +22,18 @@
                             .font-weight-bold {{card.title}}
                             .hover.rounded(@click.stop="$router.push({path: `/u/${card.author.name}`})") u/{{card.author.name | truncate}}
                         v-spacer
+                        v-btn.mr-2(v-if="card.author.name == user.name", fab, dark, small, :color="edit ? 'black' : 'green'", @click="editAction")
+                            v-icon(small) {{edit ? 'mdi-content-save' : 'mdi-pencil'}}
                         like-button(:name="card.name", :author="card.author.name")
                         v-btn(icon, large, @click="next")
                             v-icon mdi-arrow-right
                     bottom-post-bar(:card="card")
                 #scroll(ref="scroll")
-                    .pa-3 {{card.description}}
+                    .my-4.ml-2(v-if="!edit") {{card.description}}
+                    .mt-4(v-else)
+                        .font-weight-bold Descripción
+                        v-textarea.mt-4(v-model="card.description", placeholder="Descripción", solo, rounded)
+                    card-pills(:card="card", :edit="edit")
                     comments(v-if="expansion", :card="card", :pill="pill.name ? pill.name : ''")
         #desktop(v-else)
             v-layout(align-start)
@@ -375,7 +381,11 @@ export default {
         truncate(value) {
             let str = value.toString()
             return truncate(str, 28)
-        }
+        },
+        truncateChip(value) {
+            let str = value.toString()
+            return truncate(str, 14)
+        },
     },
 
     methods: {

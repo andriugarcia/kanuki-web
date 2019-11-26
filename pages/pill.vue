@@ -12,18 +12,16 @@
                             v-img(:src="pill.avatar")
                         .font-weight-bold.ml-2(style="font-size: .6em") p/{{pill.name}}
                 v-spacer
-                follow(:name="pill.name")
+                follow.mt-2(:name="pill.name")
             v-sheet#scroll.overflow-y-auto(style="max-height: 92vh")
                 v-container(style="height: 140px")
                 .pa-3
                     .font-weight-bold Descripción 
                     div {{pill.description}}
-                    v-btn.my-3(block, rounded, color="kred", outlined)
-                        v-icon mdi-pill
-                        div FOLLOW
-                    v-btn(block, rounded, dark, color="kblue", @click="createDialog = true")
-                        v-icon mdi-plus
-                        div AÑADIR POST
+                    follow.mt-2.mb-2(:name="pill.name", block)
+                    v-btn.mb-10(block, rounded, small, dark, color="kblue", @click="createDialog = true")
+                        v-icon(small) mdi-plus
+                        .font-weight-bold(style="letter-spacing: 0; font-size: .8em") AÑADIR POST
                     post(v-for="(publication, i) in pill.publications", :key="i", :card="publication.card", :pill="publication.pill", :removeable="checkAdmin")
         #desktop(v-else)
             v-layout(style="padding-top: 72px", align-start)
@@ -96,7 +94,7 @@ export default {
                     ${autenticated ? 'admins { name, avatar },' : ''}
                     publications {
                         pill {
-                            name
+                            name, avatar
                         },
                         card {
                             name,
