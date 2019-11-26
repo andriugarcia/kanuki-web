@@ -13,6 +13,10 @@
     overflow: hidden;
 }
 
+.hide-scroll::-webkit-scrollbar {
+    display: none;
+}
+
 .pointer {
     cursor: pointer;
 }

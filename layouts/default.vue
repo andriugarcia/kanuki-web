@@ -12,16 +12,19 @@
             create-switch
       v-card.pa-2(style="position: fixed; top: 0; right: 0; z-index: 20; border-radius: 0 0 0 24px; z-index: 20")
         v-layout
-          v-text-field(placeholder="Buscar", solo, flat, hide-details, v-model="searchText", append-icon="mdi-magnify", @click.append="$router.push({path: '/s/' + searchText})", color="kblue", @keydown.enter="$router.push({path: '/s/' + searchText})")
+          v-text-field(placeholder="Buscar", solo, flat, hide-details, v-model="searchText", append-icon="mdi-magnify", @click:append="$router.push({path: '/s/' + searchText})", color="kblue", @keydown.enter="$router.push({path: '/s/' + searchText})")
           v-menu(offset-y, open-on-hover)
             template(v-slot:activator="{ on }")
               v-avatar.mt-2(v-on="on", size="32")
                 v-img(:src="user.avatar")
             v-card
               notifications
-      v-layout
+      v-layout(align-start)
         v-flex(xs3, style="padding-top: 64px")
-          library
+          library(v-if="user.name")
+          .pa-2(v-else)
+            login
+            register.mt-2
         v-flex(xs9)
           nuxt-child
     #mobile(v-else)
@@ -56,13 +59,16 @@
 import Library from '@/layouts/library'
 import gql from 'graphql-tag'
 import Notifications from "@/layouts/notifications"
+import Login from "@/components/Login"
+import Register from "@/components/Register"
   
 export default {
 
   components: {
     Library,
     CreateSwitch: () => import("@/components/CreateSwitch"),
-    Notifications
+    Notifications,
+    Login, Register
   },
 
   computed: {
@@ -93,66 +99,11 @@ export default {
     toSearch() {
       this.routing = ""
       this.$router.push({name: "Discover"})
-    },
-
-    async getUser() {
-      let data = await this.$apollo.query({
-        query: gql`query {
-          getUser(name: "andres") {
-            name,
-            avatar,
-            followers {
-              name, avatar
-            },
-            following {
-              name, avatar
-            },
-            cards {
-              name,
-              title,
-              description,
-              karma,
-              author {
-                name
-              }
-            },
-            publications {
-              card {
-                name
-              }
-            }
-            likes {
-              name
-            }
-            followingPills {
-              name
-            }
-          }
-        }`
-      })
-
-      this.$store.commit("auth/setUser", data.data.getUser)
     }
   },
 
   async mounted() {
     this.$store.commit("core/setMounted")
-
-    let {data} = await this.$apollo.mutate({
-      mutation: gql`mutation {
-        login(name: "andres", password: "micontraseña")
-      }`
-    })
-
-    console.log(data.login)
-
-    await this.$apolloHelpers.onLogin(data.login)
-    const tok = await this.$apolloHelpers.getToken()
-
-    // console.log(tok)
-    // console.log("getting user")
-    await this.getUser()
-
   },
 
 }

@@ -1,5 +1,5 @@
 <template lang="pug">
-    v-btn(fab, color="kred", dark, @click="like")
+    v-btn(fab, color="kred", dark, @click.stop="like")
         v-icon {{ isLiked ? 'mdi-heart' : 'mdi-heart-outline'}}
 </template>
 
@@ -10,12 +10,12 @@ import gql from "graphql-tag"
 export default {
     computed: {
         likes() {
-            return this.$store.state.auth.user.cards
+            return this.$store.state.auth.user.likes
         },
 
         isLiked() {
             if (!this.likes) return false
-            return this.likes.some(like => like.name == this.name && like.author.name == this.author)
+            return this.likes.some(like => like.name == this.name)
         }
     },
 
@@ -47,7 +47,7 @@ export default {
                 }`
             }
 
-            let updatedUser = await this.$apollo.mutate({
+            let {data} = await this.$apollo.mutate({
                 mutation,
                 variables: {
                     name: this.name,
@@ -55,7 +55,9 @@ export default {
                 }
             })
 
-            this.$store.commit("auth/mergeUser", updatedUser)
+            this.$store.state.auth.user.likes = this.isLiked ? data.removeLike.likes : data.like.likes
+
+            
 
         }
     },

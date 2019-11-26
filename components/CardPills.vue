@@ -1,6 +1,6 @@
 <template lang="pug">
     v-layout.hide-scroll(justify-start, style="overflow-x: scroll")
-        v-flex(v-for="(publication, i) in publications", :key="i", xs8, md5)
+        v-flex.mt-4(v-for="(publication, i) in card.publications", :key="i", xs8, md5, style="position: relative")
             v-card.ma-1.pointer(style="position: relative; height: 100px;", v-ripple, @click="$router.push({path: `/p/${publication.pill.name}`})")
                 v-img(:src="require('@/assets/images/pill-default-banner.png')", style="width: 100%; height: 24px; object-fit: cover")
                     v-layout.mr-1(justify-end)
@@ -11,11 +11,15 @@
                 .pa-2.pt-4
                     .font-weight-bold(style="font-size: .8em") p/{{publication.pill.name | truncate}}
                     div(style="font-size: .7em") {{publication.pill.description | truncateDescription}}
+            v-btn.elevation-8(v-if="edit", x-small, fab, @click="removePublication(i)", style="position: absolute; top: -12px; right: 12px;")
+                v-icon(small) mdi-close
+        
 </template>
 
 <script>
 
 import truncate from "@/helpers/truncate"
+import gql from "graphql-tag"
 
 export default {
     filters: {
@@ -29,12 +33,18 @@ export default {
             return truncate(str, 40)
         }
     },
-    props: ["publications"]
+
+    methods: {
+        async removePublication(index) {
+            this.$store.dispatch("publication/remove", {card: this.card, index})
+
+            this.card.publications.splice(index, 1)
+        }
+    },
+
+    props: {
+        card: Object,
+        edit: Boolean
+    }
 }
 </script>
-
-<style lang="scss" scoped>
-    .hide-scroll::-webkit-scrollbar {
-        display: none;
-    }
-</style>

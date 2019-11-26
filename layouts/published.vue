@@ -1,18 +1,16 @@
 <template lang="pug">
     #published.mt-4
-        post(v-for="(publication, i) in publications", :key="i", :card="publication.card", :pill="publication.pill.name")
+        post(v-for="(publication, i) in publications", :key="i", :card="publication.card", :pill="publication.pill")
 </template>
 
 <script>
 
-import Follow from "@/components/Follow"
 import gql from "graphql-tag"
 import Post from "@/components/Post"
 
 export default {
 
     components: {
-        Follow,
         Post
     },
 

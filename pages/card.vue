@@ -12,7 +12,7 @@
             client-only
                 v-layout(slot="placeholder", style="height: 240px", justify-center, align-center)
                     v-progress-circular(:size="100", :width="8", color="#4F9CD1", indeterminate)
-                component.rounded(:is="dynamicTemplate", :content="content", :user="userParam", :edit="edit", :card="cardParam", :key="rerender")
+                component.rounded(:is="dynamicTemplate", @save="save", :content="content", :user="userParam", :edit="edit", :card="cardParam", :key="rerender")
             v-card.pa-2(ref="card", :class="{'margintop': !expansion, 'fullscreen': expansion}", style="border-radius: 24px 24px 0 0")
                 #touch.pb-3(ref="touch")
                     v-layout(align-center)
@@ -30,8 +30,8 @@
                     .pa-3 {{card.description}}
                     comments(v-if="expansion", :card="card", :pill="pill.name ? pill.name : ''")
         #desktop(v-else)
-            v-layout
-                v-flex(xs8)
+            v-layout(align-start)
+                v-flex(v-if="!analytics", xs8)
                     v-layout.mt-6(align-center)
                         v-btn(icon, @click="$router.go(-1)")
                             v-icon mdi-arrow-left
@@ -46,7 +46,9 @@
                         v-layout(slot="placeholder", justify-center, align-center)
                             v-skeleton-loader(type="card", style="width: 100%")
                             //- v-progress-circular(:size="100", :width="8", color="#4F9CD1", indeterminate)
-                        component.rounded.mt-5(:is="dynamicTemplate", :content="content", :user="userParam", :edit="edit", :card="cardParam")
+                        component.rounded.mt-5(:is="dynamicTemplate", @save="save", :content="content", :user="userParam", :edit="edit", :card="cardParam")
+                v-flex(v-else, xs8)
+                    card-analytics
                 v-flex.ma-1.mx-2(xs4, style="padding-top: 72px")
                     v-card.pa-3(style="border-radius: 24px")
                         v-layout(align-center)
@@ -62,15 +64,33 @@
                             v-btn.ml-2(icon, large, @click="next")
                                 v-icon mdi-arrow-right
                         bottom-post-bar.mt-1(:card="card")
+                    v-layout.pt-3(v-if="card.author.name == user.name", block, justify-center)
+                        v-btn.ml-1.font-weight-bold(rounded, depressed, color="#00000010", @click="analytics = true")
+                            v-icon.kblue--text mdi-poll
+                            .ml-2.text-capitalize.kblue--text(style="letter-spacing: 0") Analíticas
                     .my-4.ml-2(v-if="!edit") {{card.description}}
-                    v-textarea.mt-4(v-else, v-model="card.description", placeholder="Descripción", solo, rounded)
-                    card-pills(:publications="card.publications")
+                    .mt-4(v-else)
+                        .font-weight-bold Descripción
+                        v-textarea.mt-4(v-model="card.description", placeholder="Descripción", solo, rounded)
+                    v-layout(justify-space-between, align-center)
+                        .font-weight-bold Publicado en
+                        v-btn(text, small, @click="spreadDialog = true") 
+                            v-icon(small) mdi-source-fork
+                            div Spread
+                    card-pills(:card="card", :edit="edit")
+                    v-btn.mt-4.font-weight-bold(v-if="edit", rounded, color="red", block, dark, @click="spreadDelete = true") Eliminar Post
                     comments(:card="card", :pill="pill.name ? pill.name : ''")
         #spread
             v-dialog(v-model="spreadDialog", v-if="$vuetify.breakpoint.mdAndUp", width="500")
                 spread(:card="card")
             v-bottom-sheet(v-else, v-model="spreadDialog")
                 spread(:card="card")
+
+        #deletePost
+            v-dialog(v-model="deleteDialog", v-if="$vuetify.breakpoint.mdAndUp", width="500", persistent, @back="deleteDialog = false")
+                delete-card(:name="card.name")
+            v-bottom-sheet(v-else, v-model="spreadDialog", persistent, @back="deleteDialog = false")
+                delete-card(:name="card.name")
 </template>
 
 <script>
@@ -85,9 +105,11 @@ import externalComponent from '@/helpers/external-component';
 
 export default {
 
-    async asyncData({app, params}) {
+    async asyncData({app, params, store}) {
         console.log("Getting Data")
         let client = app.apolloProvider.defaultClient
+        let autenticated = store.state.auth.user.name ? true : false
+        console.log("AUTH: ", autenticated)
 
         let query
         if (params.pill) {
@@ -98,10 +120,10 @@ export default {
                         title,
                         description,
                         karma,
+                        ${autenticated ? 'vote,' : ''}
                         type,
                         shareCount,
                         commentsCount,
-                        vote,
                         publications {
                             pill {
                                 name, avatar, banner, description, followersCount
@@ -111,6 +133,7 @@ export default {
                             id,
                             text,
                             karma,
+                            ${autenticated ? 'vote,' : ''}
                             author {
                                 name,
                                 avatar
@@ -125,6 +148,7 @@ export default {
                                 id,
                                 text,
                                 karma,
+                                ${autenticated ? 'vote,' : ''}
                                 author {
                                     name,
                                     avatar
@@ -135,13 +159,43 @@ export default {
                                 card {
                                     name
                                 },
-
+                                subComments {
+                                    id,
+                                    text,
+                                    karma,
+                                    ${autenticated ? 'vote,' : ''}
+                                    author {
+                                        name,
+                                        avatar
+                                    },
+                                    pill {
+                                        name
+                                    },
+                                    card {
+                                        name
+                                    },
+                                    subComments {
+                                        id,
+                                        text,
+                                        karma,
+                                        author {
+                                            name,
+                                            avatar
+                                        },
+                                        pill {
+                                            name
+                                        },
+                                        card {
+                                            name
+                                        }
+                                    }
+                                }
                             }
     
                         },
                         content,
                         author {
-                            name
+                            name, avatar
                         }
                     },
 
@@ -159,7 +213,7 @@ export default {
                     title,
                     description,
                     karma,
-                    vote,
+                    ${autenticated ? 'vote,' : ''}
                     type,
                     shareCount,
                     commentsCount,
@@ -173,6 +227,7 @@ export default {
                         id,
                         text,
                         karma,
+                        ${autenticated ? 'vote,' : ''}
                         author {
                             name,
                             avatar
@@ -187,6 +242,7 @@ export default {
                             id,
                             text,
                             karma,
+                            ${autenticated ? 'vote,' : ''}
                             author {
                                 name,
                                 avatar
@@ -197,13 +253,29 @@ export default {
                             card {
                                 name
                             },
+                            subComments {
+                                id,
+                                text,
+                                karma,
+                                ${autenticated ? 'vote,' : ''}
+                                author {
+                                    name,
+                                    avatar
+                                },
+                                pill {
+                                    name
+                                },
+                                card {
+                                    name
+                                }
+                            }
 
                         }
 
                     },
                     content,
                     author {
-                        name
+                        name, avatar
                     }
                 }
             }`
@@ -234,6 +306,8 @@ export default {
         BottomPostBar,
         Comments: () => import("@/components/Comments"),
         Spread: () => import("@/layouts/spread"),
+        DeleteCard: () => import("@/components/DeleteCard"),
+        CardAnalytics: () => import("@/components/CardAnalytics"),
         CardPills,
         Follow
     },
@@ -255,7 +329,7 @@ export default {
 
         dynamicTemplate() {
             console.log("Getting card type: ", this.card.type)
-            return () => externalComponent(`http://localhost:8200/kanuki-${this.card.type}/kanuki-${this.card.type}.umd.min.js`)
+            return () => externalComponent(`https://kanuki-router.herokuapp.com/kanuki-${this.card.type}/kanuki-${this.card.type}.umd.min.js`)
         },
 
         isMounted() {
@@ -291,7 +365,9 @@ export default {
             card: {},
             edit: false,
             rerender: 0,
-            spreadDialog: false
+            spreadDialog: false,
+            deleteDialog: false,
+            analytics: false
         }
     },
 
@@ -303,27 +379,32 @@ export default {
     },
 
     methods: {
-        async editAction() {
+        editAction() {
             if (this.edit) {
-                await this.$apollo.mutate({
-                    mutation: gql`mutation EditCard($name: String!, $description: String, $content: String) {
-                        editCard(name: $name, description: $description, content: $content) {
-                            name
-                        }
-                    }`,
-
-                    variables: {
-                        name: this.card.name,
-                        description: this.card.description,
-                        content: JSON.stringify(this.content)
-                    }
-                })
+                this.save()
 
                 this.edit = false
             }
             else {
                 this.edit = true
             }
+        },
+
+        async save() {
+            console.log("saving")
+            await this.$apollo.mutate({
+                mutation: gql`mutation EditCard($name: String!, $description: String, $content: String) {
+                    editCard(name: $name, description: $description, content: $content) {
+                        name
+                    }
+                }`,
+
+                variables: {
+                    name: this.card.name,
+                    description: this.card.description,
+                    content: JSON.stringify(this.content)
+                }
+            })
         },
 
         toParent() {
@@ -573,7 +654,7 @@ export default {
     mounted() {
         let heds = document.getElementsByTagName("head")
         let link = document.createElement("link")
-        link.href = `http://localhost:8200/kanuki-${this.card.type}/kanuki-${this.card.type}.css`
+        link.href = `https://kanuki-router.herokuapp.com/kanuki-${this.card.type}/kanuki-${this.card.type}.css`
         link.rel = "stylesheet"
         link.type = "text/css"
 

@@ -21,7 +21,7 @@
                     //- post(v-for="(publication, i) in user.publications", :key="i", :card="publication.card")
                     post(v-for="(card, i) in user.cards", :key="i", :card="card")
         #desktop(v-else)
-            v-layout(style="padding-top: 72px")
+            v-layout(style="padding-top: 72px", align-start)
                 v-flex(xs8)
                     masonry(v-if="!edit", :cols="{default: 2, 960: 1}")
                         post(v-for="(card, i) in user.cards", :key="i", :card="card")
@@ -58,8 +58,9 @@ import Post from "@/components/Post"
 import gql from "graphql-tag"
 
 export default {
-    async asyncData({app, params}) {
+    async asyncData({app, params, store}) {
         let client = app.apolloProvider.defaultClient
+        let autenticated = store.state.auth.user.name ? true : false
 
         let data = await client.query({
             query: gql`query GetUser($user: String!) {
@@ -71,14 +72,11 @@ export default {
             bio,
             locale,
             followersCount,
-            followers {
-              name
-            },
             cards {
                 name,
                 title,
                 karma,
-                vote,
+                ${autenticated ? 'vote,' : ''}
                 type,
                 shareCount,
                 commentsCount,
@@ -97,6 +95,7 @@ export default {
                 name,
                 title,
                 karma,
+                ${autenticated ? 'vote,' : ''}
                 type,
                 shareCount,
                 commentsCount,
@@ -106,12 +105,6 @@ export default {
                 }
               },
               createdAt
-            }
-            likes {
-              name
-            }
-            followingPills {
-              name
             }
           }
         }`,

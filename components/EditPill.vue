@@ -2,20 +2,24 @@
     #EditPill
         v-hover
             template(v-slot:default="{ hover }")
-                v-img(:src="require('@/assets/images/pill-default-banner.png')", style="height: 100%; border-radius: 24px;")
+                v-img(:src="pill.banner", style="height: 100%; border-radius: 24px;")
                     v-fade-transition
                         v-overlay(v-if="hover", absolute, style="border-radius: 24px")
-                            v-icon mdi-pencil
-                    input.input(type="file")
+                            v-layout(column, align-center)
+                                v-icon mdi-pencil
+                                div 1920x1080
+                    image-input(:id="pill.name", type="banner", @change-banner="changeBanner")
         v-layout.ml-8(align-center, style="margin-top: -60px")
             v-hover
                 template(v-slot:default="{ hover }")
                     v-avatar(:size="120")
-                        v-img(:src="require('@/assets/images/kanuki-user-avatar-default.png')")
+                        v-img(:src="pill.avatar")
                         v-fade-transition
                             v-overlay(v-if="hover", absolute)
-                                v-icon mdi-pencil
-                        input.input(type="file")
+                                v-layout(column, align-center)
+                                    v-icon mdi-pencil
+                                    div 500x500
+                        image-input(:id="pill.name", type="avatar", @change-avatar="changeAvatar")
             v-card.ml-3.pa-3(style="border-radius: 24px;")
                 .font-weight-bold p/{{pill.name}}
         v-layout.mt-6(align-center)
@@ -35,13 +39,13 @@
         v-list.mt-2.elevation-2
             v-list-item(v-for="(admin, i) in pill.admins", :key="i")
                 v-list-item-avatar
-                    v-img(:src="require('@/assets/images/kanuki-user-avatar-default.png')")
+                    v-img(:src="admin.avatar")
                 v-list-item-title.font-weight-bold u/{{admin.name}}
                 follow.my-2(name="andres", :isUser="true")
             v-list-item
-                v-text-field(placeholder="Nuevo moderador")
+                v-text-field(placeholder="Nuevo moderador", v-model="textModerator")
                     v-chip.font-weight-bold(small, color="kblue", dark, slot="prepend-inner") u/
-                    v-btn.font-weight-bold(small, rounded, dark, color="kblue", slot="append-outer", style="letter-spacing: 0") Añadir
+                    v-btn.font-weight-bold(small, rounded, dark, color="kblue", @click="addModerator", slot="append-outer", style="letter-spacing: 0") Añadir
         v-btn.mt-5(color="red lighten-4", large, depressed, block) 
             .red--text.font-weight-bold(style="letter-spacing: 0") Dejar este grupo
         v-layout.my-6(justify-space-around)
@@ -56,10 +60,12 @@
 <script>
 
 import Follow from "@/components/Follow"
+import ImageInput from "@/components/ImageInput"
 
 export default {
     components: {
-        Follow
+        Follow,
+        ImageInput
     },
 
     computed: {
@@ -107,25 +113,29 @@ export default {
         }
     },
 
+    methods: {
+        changeAvatar(link) {
+            this.pill.avatar = link
+        },
+
+        changeBanner(link) {
+            this.pill.banner = link
+            console.log("Link: ", link)
+            console.log("banner", this.pill.banner)
+        },
+
+        addModerator() {
+
+        }
+    },
+
     data() {
         return {
-            languages: ["Castellano", "English"]
+            languages: ["Castellano", "English"],
+            textModerator: ""
         }
     },
 
     props: ["pill"]
 }
 </script>
-
-
-<style lang="scss" scoped>
-.input {
-    opacity: 0; /* invisible but it's there! */
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top:0; bottom: 0; left:0; right: 0;
-    z-index: 18;
-    cursor: pointer;
-}
-</style>

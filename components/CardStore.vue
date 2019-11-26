@@ -4,7 +4,7 @@
             v-layout(align-center)
                 v-btn(icon, @click="$emit('back')")
                     v-icon mdi-arrow-left
-                v-text-field(solo, hide-details, rounded, label="Buscar...", append-icon="mdi-magnify")
+                v-text-field.ml-2(hide-details, rounded, outlined, dense, placeholder="Buscar...", append-icon="mdi-magnify")
             .mt-5.font-weight-bold Últimos usados
             v-layout
                 .pa-2.hover.ml-2(style="border-radius: 12px", @click="type = 'article'")

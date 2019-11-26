@@ -14,10 +14,12 @@ import '../assets/main.scss'
 
 import '../node_modules/vuetify/dist/vuetify.css'
 
+import _7721652d from '../layouts/cards.vue'
 import _50a6b232 from '../layouts/created.vue'
 import _6f6c098b from '../layouts/default.vue'
 import _68812642 from '../layouts/followers.vue'
 import _6881094a from '../layouts/following.vue'
+import _37971bbf from '../layouts/followingPills.vue'
 import _1d405805 from '../layouts/library.vue'
 import _77a3c186 from '../layouts/likes.vue'
 import _b4ecae9c from '../layouts/notifications.vue'
@@ -25,7 +27,7 @@ import _77dc2424 from '../layouts/pills.vue'
 import _1743aa90 from '../layouts/published.vue'
 import _eda7a62e from '../layouts/spread.vue'
 
-const layouts = { "_created": _50a6b232,"_default": _6f6c098b,"_followers": _68812642,"_following": _6881094a,"_library": _1d405805,"_likes": _77a3c186,"_notifications": _b4ecae9c,"_pills": _77dc2424,"_published": _1743aa90,"_spread": _eda7a62e }
+const layouts = { "_cards": _7721652d,"_created": _50a6b232,"_default": _6f6c098b,"_followers": _68812642,"_following": _6881094a,"_followingPills": _37971bbf,"_library": _1d405805,"_likes": _77a3c186,"_notifications": _b4ecae9c,"_pills": _77dc2424,"_published": _1743aa90,"_spread": _eda7a62e }
 
 export default {
   head: {"titleTemplate":"%s - kanuki","title":"kanuki","meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"My lovely Nuxt.js project"},{"hid":"mobile-web-app-capable","name":"mobile-web-app-capable","content":"yes"},{"hid":"apple-mobile-web-app-title","name":"apple-mobile-web-app-title","content":"kanuki"},{"hid":"author","name":"author","content":"versy"},{"hid":"theme-color","name":"theme-color","content":"#fff"},{"hid":"og:type","name":"og:type","property":"og:type","content":"website"},{"hid":"og:title","name":"og:title","property":"og:title","content":"kanuki"},{"hid":"og:site_name","name":"og:site_name","property":"og:site_name","content":"kanuki"},{"hid":"og:description","name":"og:description","property":"og:description","content":"My lovely Nuxt.js project"}],"link":[{"rel":"icon","type":"image\u002Fx-icon","href":"\u002Ffavicon.ico"},{"rel":"stylesheet","type":"text\u002Fcss","href":"https:\u002F\u002Ffonts.googleapis.com\u002Fcss?family=Roboto:100,300,400,500,700,900&display=swap"},{"rel":"stylesheet","type":"text\u002Fcss","href":"https:\u002F\u002Fcdn.jsdelivr.net\u002Fnpm\u002F@mdi\u002Ffont@latest\u002Fcss\u002Fmaterialdesignicons.min.css"},{"rel":"manifest","href":"\u002F_nuxt\u002Fmanifest.3f75ff0a.json"},{"rel":"shortcut icon","href":"\u002F_nuxt\u002Ficons\u002Ficon_64.5f6a36.png"},{"rel":"apple-touch-icon","href":"\u002F_nuxt\u002Ficons\u002Ficon_512.5f6a36.png","sizes":"512x512"}],"style":[],"script":[],"htmlAttrs":{"lang":"en"}},

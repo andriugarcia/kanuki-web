@@ -133,7 +133,7 @@ export async function setContext (app, context) {
       payload: context.payload,
       error: context.error,
       base: '/',
-      env: {}
+      env: {"S3_BUCKET_NAME":"kanuki-assets","AWS_ACCESS_KEY_ID":"7JS47KGN2K4PZVRBJ6DP","AWS_SECRET_ACCESS_KEY":"3Rp7SkhcskR0RgqoF0eWYa1DyfRVBDjqX0rY/OvKCv0"}
     }
     // Only set once
     if (context.req) {
