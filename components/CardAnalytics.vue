@@ -68,7 +68,6 @@
 
 <script>
 import Linechart from "@/components/LineChart"
-//Comentario para que git lo detecte
 export default {
     components: {
         Linechart
