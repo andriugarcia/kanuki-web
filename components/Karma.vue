@@ -1,11 +1,12 @@
 <template lang="pug">
-    v-card.pa-1(color="kyellow")
-        v-layout(justify-space-around, align-center)
-            v-btn(small, icon, :color="prop.vote == 'down' ? 'kblue': 'black'", @click.stop="vote('down')")
-                v-icon mdi-minus
-            .font-weight-bold.mx-2 {{prop.karma}}
-            v-btn(small, icon, :color="prop.vote == 'up' ? 'kred': 'black'", @click.stop="vote('up')")
-                v-icon mdi-plus
+    #Karma
+        v-card.pa-1(color="kyellow", flat)
+            v-layout(justify-space-around, align-center)
+                v-btn(small, icon, :color="prop.vote == 'down' ? 'kblue': 'black'", @click.stop="vote('down')")
+                    v-icon mdi-minus
+                .font-weight-bold.mx-2.uns {{prop.karma}}
+                v-btn(small, icon, :color="prop.vote == 'up' ? 'kred': 'black'", @click.stop="vote('up')")
+                    v-icon mdi-plus
 </template>
 
 <script>
@@ -13,8 +14,13 @@
 import gql from "graphql-tag"
 
 export default {
+
     methods: {
         async vote(voting) {
+            if (!this.$store.state.auth.logged) {
+                this.$store.commit('core/setOpenAccountPopup', true)
+                return
+            }
             if (this.prop.vote == voting) {
                 voting = 'no'
             }
@@ -60,6 +66,10 @@ export default {
     computed: {
         prop() {
             return typeof this.card != 'undefined' ? this.card : this.comment
+        },
+
+        openAccountPopup() {
+            return this.$store.commit('core/setOpenAccountPopup', true)
         }
     },
 

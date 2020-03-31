@@ -15,14 +15,15 @@
                 follow.mt-2(:name="pill.name")
             v-sheet#scroll.overflow-y-auto(style="max-height: 92vh")
                 v-container(style="height: 140px")
-                .pa-3
-                    .font-weight-bold Descripción 
+                .px-3
+                    .font-weight-bold {{$t('description')}} 
                     div {{pill.description}}
                     follow.mt-2.mb-2(:name="pill.name", block)
-                    v-btn.mb-10(block, rounded, small, dark, color="kblue", @click="createDialog = true")
+                    v-btn(block, rounded, small, dark, color="kblue", @click="openCreateDialog")
                         v-icon(small) mdi-plus
-                        .font-weight-bold(style="letter-spacing: 0; font-size: .8em") AÑADIR POST
-                    post(v-for="(publication, i) in pill.publications", :key="i", :card="publication.card", :pill="publication.pill", :removeable="checkAdmin")
+                        .font-weight-bold(style="letter-spacing: 0; font-size: .8em") {{$t('pill.add')}}
+                fixed-cards(isPill)
+                post(v-for="(publication, i) in pill.publications", :key="i", :card="publication.card", :pill="publication.pill", :removeable="checkAdmin")
         #desktop(v-else)
             v-layout(style="padding-top: 72px", align-start)
                 v-flex(xs8)
@@ -46,19 +47,29 @@
                         v-sheet#scroll.overflow-y-auto(style="max-height: 92vh")
                             v-container(style="height: 140px")
                             .pa-3
-                                .font-weight-bold Descripción 
+                                .font-weight-bold {{$t('description')}} 
                                 div {{pill.description}}
                                 follow.my-2(:name="pill.name", block)
-                                v-btn(block, rounded, small, dark, color="kblue", @click="createDialog = true")
+                                v-btn(block, rounded, small, dark, color="kblue", @click="openCreateDialog")
                                     v-icon(small) mdi-plus
-                                    .font-weight-bold(style="letter-spacing: 0; font-size: .8em") AÑADIR POST
+                                    .font-weight-bold(style="letter-spacing: 0; font-size: .8em") {{$t('pill.add')}}
+                    fixed-cards.mt-4(isPill)
+                    .px-3.mt-6
+                        b Top 5 Autores
+                        v-list(color="transparent")
+                            v-list-item(v-for="i in 5")
+                                v-list-item-avatar
+                                    v-img(:src="require('@/assets/images/kanuki-user-avatar-default.png')")
+                                v-list-item-title Nombre del Autor
+                                v-list-item-action
+                                    v-chip.font-weight-bold(small, color="kyellow") 15K
                     v-layout.pa-3(v-if="checkAdmin", justify-center)
                         v-btn.mr-1.font-weight-bold(rounded, depressed, :color="edit ? 'black' : '#00000010'", @click="edit = true", :dark="edit", :class="{'kred--text': !edit}")
                             v-icon {{edit ? 'mdi-content-save' : 'mdi-settings'}}
-                            .ml-2.text-capitalize(style="letter-spacing: 0") {{edit ? 'Guardar' : 'Configuración'}}
+                            .ml-2.text-capitalize(style="letter-spacing: 0") {{edit ? $t('save') : $t('config')}}
                         v-btn.ml-1.font-weight-bold(rounded, depressed, color="#00000010")
                             v-icon.kblue--text mdi-poll
-                            .ml-2.text-capitalize.kblue--text(style="letter-spacing: 0") Analíticas
+                            .ml-2.text-capitalize.kblue--text(style="letter-spacing: 0") {{$t('analytics.header')}}
         #CreatePost
             v-dialog(v-if="$vuetify.breakpoint.mdAndUp", v-model="createDialog", width="500")
                 v-card.pa-2(style="border-radius: 24px 24px 0 0")
@@ -74,6 +85,7 @@
 import Follow from "@/components/Follow"
 import Post from "@/components/Post"
 import gql from "graphql-tag"
+import FixedCards from "@/components/FixedCards"
 
 export default {
     async asyncData({app, params, store}) {
@@ -129,6 +141,7 @@ export default {
     components: {
         Follow,
         Post,
+        FixedCards,
         AddPost: () => import("@/components/AddPost"),
         EditPill: () => import("@/components/EditPill")
     },
@@ -136,6 +149,14 @@ export default {
     computed: {
         isMounted() {
             return this.$store.state.core.isMounted
+        },
+
+        logged() {
+            return this.$store.state.auth.logged
+        },
+
+        openAccountPopup() {
+            return this.$store.state.core.openAccountPopup
         },
 
         checkAdmin() {
@@ -168,6 +189,14 @@ export default {
                 }`,
                 variables: this.pill
             })
+        },
+
+        openCreateDialog() {
+            if (!this.$store.state.auth.logged) {
+                this.$store.commit('core/setOpenAccountPopup', true)
+                return
+            }
+            this.createDialog = true
         }
     }
 }

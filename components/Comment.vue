@@ -8,8 +8,8 @@
                     v-avatar(size="40")
                         v-img(:src="comment.author.avatar")
                     .ml-1
-                        .hover.rounded.font-weight-bold(style="font-size: .8em", @click="$router.push({path: `/u/${comment.author.name}`})") {{`u/${comment.author.name}`}}
-                        .hover.rounded(style="font-size: .8em", @click="$router.push({path: typeof comment.pill != 'undefined' ? `/p/${comment.pill.name}` : `/u/${comment.author.name}`})") {{typeof comment.pill != 'undefined' ? `p/${comment.pill.name}` : `u/${comment.author.name}`}}
+                        .hover.rounded.font-weight-bold.uns(style="font-size: .8em", @click="$router.push({path: `/u/${comment.author.name}`})") {{`u/${comment.author.name}`}}
+                        .hover.rounded.uns(style="font-size: .8em", @click="$router.push({path: typeof comment.pill != 'undefined' ? `/p/${comment.pill.name}` : `/u/${comment.author.name}`})") {{typeof comment.pill != 'undefined' ? `p/${comment.pill.name}` : `u/${comment.author.name}`}}
                     v-spacer
                     v-btn.mr-2(text, small, rounded, @click="reply(comment)")
                         .text-capitalize.font-weight-bold Reply
@@ -23,7 +23,7 @@
                 v-layout.ml-2
                     v-avatar(:size="32")
                         v-img(:src="comment.author.avatar")
-                    .ml-2(style="font-size: .8em", :class="{'white--text': n%3!=2}") Contestando a <b>u/{{comment.author.name}}</b>
+                    .ml-2.uns(style="font-size: .8em", :class="{'white--text': n%3!=2}") Contestando a <b>u/{{comment.author.name}}</b>
                 comment(v-for="(subcomment, i) in comment.subComments", :key="i", :comment="subcomment", :n="n+1", @reply="reply")
 
 </template>
@@ -37,6 +37,12 @@ export default {
         Comment: () => import("@/components/Comment")
     },
 
+    computed: {
+        logged() {
+            return this.$store.state.core.logged
+        }
+    },
+
     data() {
         return {
             answersOpen: false
@@ -45,6 +51,10 @@ export default {
 
     methods: {
         reply(comment) {
+            if (!this.$store.state.auth.logged) {
+                this.$store.commit('core/setOpenAccountPopup', true)
+                return
+            }
             this.$emit('reply', comment)
         }
     },

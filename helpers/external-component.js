@@ -1,4 +1,5 @@
-export default async function externalComponent(url) {
+export default async function externalComponent(type) {
+    const url = `http://localhost:8200/kanuki-${type}/kanuki-${type}.umd.min.js`
     const name = url.split('/').reverse()[0].match(/^(.*?)\.umd/)[1];
 
     if (window[name]) return window[name];

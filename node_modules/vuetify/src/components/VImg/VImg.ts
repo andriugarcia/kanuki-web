@@ -86,7 +86,7 @@ export default VResponsive.extend({
           src: this.src,
           srcset: this.srcset,
           lazySrc: this.lazySrc,
-          aspect: Number(this.aspectRatio),
+          aspect: Number(this.aspectRatio || 0),
         } : {
           src: this.src.src,
           srcset: this.srcset || this.src.srcset,
@@ -264,6 +264,7 @@ export default VResponsive.extend({
     node.data!.directives = this.hasIntersect ? [{
       name: 'intersect',
       options: this.options,
+      modifiers: { once: true },
       value: this.init,
     } as any] : []
 

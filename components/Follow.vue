@@ -1,7 +1,7 @@
 <template lang="pug">
     v-btn(:color="!isFollowing && !block ? '#00000015' : isUser ? 'kblue' : 'kred'", :dark="isFollowing || block", :outlined="block && !isFollowing", :block="block", depressed, rounded, small, @click.stop="follow")
         v-icon(small) {{ isFollowing ? 'mdi-check' : this.isUser ? 'mdi-account-circle-outline' : 'mdi-pill'}}
-        .font-weight-bold(style="letter-spacing: 0; font-size: .8em") {{isFollowing ? 'Following' : 'Follow'}}
+        .font-weight-bold.uns(style="letter-spacing: 0; font-size: .8em") {{ getFollowWord() }}
 </template>
 
 <script>
@@ -17,6 +17,10 @@ export default {
             return this.$store.state.auth.user.followingPills
         },
 
+        openAccountPopup() {
+            return this.$store.state.core.openAccountPopup
+        },
+
         isFollowing() {
             if (!this.following) return false
             return this.following.some(pill => pill.name == this.name)
@@ -24,7 +28,18 @@ export default {
     },
 
     methods: {
+        getFollowWord() {
+            if (this.isUser) {
+                return this.isFollowing ? this.$t('following') : this.$t('follow')
+            }
+            return this.isFollowing ? "Suscribed" : "Suscribe"
+        },
         async follow() {
+            if (!this.$store.state.auth.logged) {
+                this.$store.commit('core/setOpenAccountPopup', true)
+                return
+            }
+
             let mutation
 
             if (!this.isUser) {

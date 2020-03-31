@@ -19,8 +19,32 @@
             v-select.font-weight-bold(color="#00000015", v-model="lang", :items="languages", style="width: 100%")
         .mt-6.font-weight-bold Biografía
         v-textarea.mt-2(v-model="user.bio", solo, rounded, auto-grow)
+        b Sincronizar con tu Blog
+        div Introduce la url de tu Blog para traerte los artículos de tu Blog automaticamente a Kanuki
+        v-text-field.mt-4(solo, single-line, rounded, placeholder="Link a tu Blog")
+        v-radio(label="Importar todos los artículos ya creados")
+        v-radio(label="Sincronizar con mi blog para subir a Kanuki automaticamente")
+        v-btn.my-4(color="kblue", rounded, block, dark) Sincronizar con mi blog
+        b Sincronizar con Redes Sociales
+        div Vincula tus diferentes redes y avisa automaticamente cuando subas una nueva Página
+        v-layout.mt-2(wrap)
+            v-card.mx-2.pa-5.text-center(flat, color="transparent", @click="")
+                v-icon(large) mdi-twitter
+                div Twitter
+            v-card.mx-2.pa-5.text-center(flat, color="transparent", @click="")
+                v-icon(large) mdi-youtube
+                div YouTube
+            v-card.mx-2.pa-5.text-center(flat, color="transparent", @click="")
+                v-icon(large) mdi-facebook
+                div Facebook
+            v-card.mx-2.pa-5.text-center(flat, color="transparent", @click="")
+                v-icon(large) mdi-instagram
+                div Instagram
+            v-card.mx-2.pa-5.text-center(flat, color="transparent", @click="")
+                v-icon(large) mdi-linkedin
+                div Linkedin
         v-layout.my-6(justify-space-around)
-            v-flex(xs5, @click="emit('cancel')")
+            v-flex(xs5, @click="$emit('cancel')")
                 v-btn.font-weight-bold(large, rounded, dark, block, color="red") Cancelar
             v-flex(xs5, @click="$emit('save')")
                 v-btn.font-weight-bold(large, rounded, dark, block, color="black") Guardar

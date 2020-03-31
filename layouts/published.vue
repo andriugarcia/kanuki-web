@@ -1,6 +1,6 @@
 <template lang="pug">
     #published.mt-4
-        post(v-for="(publication, i) in publications", :key="i", :card="publication.card", :pill="publication.pill")
+        post(v-for="(publication, i) in publications", :key="i", :card="publication.card", :pill="publication.pill", @click="$emit('back')")
 </template>
 
 <script>

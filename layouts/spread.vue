@@ -3,14 +3,16 @@
         v-layout(align-center)
             v-btn(icon, @click="$emit('back')")
                 v-icon mdi-close
-            .overline.ml-2 Spread Community
+            .overline.ml-2 {{$t('publish.header')}}
+        p {{$t('publish.select')}}
+        v-alert(type="error", :value="true", outlined) {{$t('publish.notAllowed')}}
         v-list.mb-12
-            v-list-item(v-for="i in 10", :key="i", @click="")
+            v-list-item(v-for="(pill, i) in pills", :key="i", v-if="i < 5", @click="")
                 v-list-item-avatar
-                    v-avatar(color="indigo")
-                v-list-item-title p/pill
+                    v-avatar(color="indigo", :size="40")
+                v-list-item-title.font-weight-bold p/{{pill.name}}
                 
-        v-text-field.pa-2(hide-details, solo, v-model="pill", flat, style="position: absolute; bottom: 0; left: 0; right: 0", label="pill")
+        v-text-field.pa-2(hide-details, solo, v-model="pill", flat, style="position: absolute; bottom: 0; left: 0; right: 0", :label="$t('pill.header')")
             v-chip.font-weight-bold(slot="prepend-inner", color="kred", dark) p/
             v-btn(slot="append", fab, :loading="loading", dark, small, color="kblue", @click="createPublication")
                 v-icon(small) mdi-source-fork
@@ -25,6 +27,12 @@ export default {
         return {
             pill: "",
             loading: false,
+        }
+    },
+
+    computed: {
+        pills() {
+            return this.$store.state.auth.user.adminInPills
         }
     },
 

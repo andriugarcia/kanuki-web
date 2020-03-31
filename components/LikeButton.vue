@@ -1,6 +1,7 @@
 <template lang="pug">
-    v-btn(fab, color="kred", dark, @click.stop="like")
-        v-icon {{ isLiked ? 'mdi-heart' : 'mdi-heart-outline'}}
+    #likeButton
+        v-btn(fab, color="kred", dark, @click.stop="like")
+            v-icon {{ isLiked ? 'mdi-bookmark' : 'mdi-bookmark-outline'}}
 </template>
 
 <script>
@@ -16,11 +17,20 @@ export default {
         isLiked() {
             if (!this.likes) return false
             return this.likes.some(like => like.name == this.name)
+        },
+
+        openAccountPopup() {
+            return this.$store.state.core.openAccountPopup
         }
     },
 
     methods: {
         async like() {
+            if (!this.$store.state.auth.logged) {
+                this.$store.commit('core/setOpenAccountPopup', true)
+                return
+            }
+
             let mutation
             if (this.isLiked) {
                 mutation = gql`mutation RemoveLike($name: String!, $author: String!) {

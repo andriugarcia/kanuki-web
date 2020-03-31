@@ -8,7 +8,7 @@
                     v-avatar(size="40")
                         v-img(:src="comment.author.avatar")
                     .ml-1
-                        .hover.rounded.font-weight-bold(style="font-size: .8em", @click="$router.push({path: `/u/${comment.author.name}`})") {{`u/${comment.author.name}`}}
+                        .hover.rounded.font-weight-bold.uns(style="font-size: .8em", @click="$router.push({path: `/u/${comment.author.name}`})") {{`u/${comment.author.name}`}}
                     v-spacer
                     //- v-btn.mr-2(text, small, rounded, @click="$emit('reply')")
                         .text-capitalize.font-weight-bold Reply

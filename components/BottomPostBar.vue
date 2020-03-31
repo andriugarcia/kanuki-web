@@ -2,14 +2,14 @@
     #bottomPostBar
         v-layout(justify-space-around)
             v-flex(xs3)
-                v-btn(text)
-                    .mr-1 {{card.commentsCount}}
+                v-btn(text, @click.stop="$emit('comments')")
+                    .mr-1.uns {{card.commentsCount}}
                     v-icon mdi-comment
             v-flex(xs5)
                 karma(:card="card")
             v-flex(xs3)
-                v-btn(text, @click="shareDialog = true")
-                    .mr-1 {{card.shareCount}}
+                v-btn(text, @click.stop="shareDialog = true")
+                    .mr-1.uns {{card.shareCount}}
                     v-icon mdi-share-variant
         #share
             v-dialog(v-model="shareDialog", v-if="$vuetify.breakpoint.mdAndUp", width="500", @back="shareDialog = false")

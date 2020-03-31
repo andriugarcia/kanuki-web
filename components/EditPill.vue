@@ -21,7 +21,7 @@
                                     div 500x500
                         image-input(:id="pill.name", type="avatar", @change-avatar="changeAvatar")
             v-card.ml-3.pa-3(style="border-radius: 24px;")
-                .font-weight-bold p/{{pill.name}}
+                .font-weight-bold.uns p/{{pill.name}}
         v-layout.mt-6(align-center)
             .font-weight-bold Idioma de la comunidad: 
             v-select.font-weight-bold(color="#00000015", v-model="lang", :items="languages", style="width: 100%")
@@ -46,8 +46,9 @@
                 v-text-field(placeholder="Nuevo moderador", v-model="textModerator")
                     v-chip.font-weight-bold(small, color="kblue", dark, slot="prepend-inner") u/
                     v-btn.font-weight-bold(small, rounded, dark, color="kblue", @click="addModerator", slot="append-outer", style="letter-spacing: 0") Añadir
-        v-btn.mt-5(color="red lighten-4", large, depressed, block) 
-            .red--text.font-weight-bold(style="letter-spacing: 0") Dejar este grupo
+            .px-4
+                v-btn(color="red lighten-4", large, depressed, block) 
+                    .red--text.font-weight-bold(style="letter-spacing: 0") Dejar este grupo
         v-layout.my-6(justify-space-around)
             v-flex(xs5, @click="emit('cancel')")
                 v-btn.font-weight-bold(large, rounded, dark, block, color="red") Cancelar

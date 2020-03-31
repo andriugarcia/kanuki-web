@@ -1,6 +1,6 @@
 <template lang="pug">
     v-list(color="transparent")
-        v-list-item(v-for="(pill, i) in pills", :key="i", @click="$router.push({path: '/p/' + pill.name})")
+        v-list-item(v-for="(pill, i) in pills", :key="i", @click="toPill(pill)")
             v-list-item-avatar
                 v-avatar(size="32", color="kred")
                     v-img(:src="pill.avatar")
@@ -21,6 +21,13 @@ export default {
     computed: {
         pills() {
             return this.$store.state.auth.user.adminInPills
+        }
+    },
+
+    methods: {
+        toPill(pill) {
+            this.$router.push({path: '/p/' + pill.name})
+            this.$emit('back')
         }
     }
 

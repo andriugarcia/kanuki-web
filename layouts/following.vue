@@ -1,6 +1,6 @@
 <template lang="pug">
     v-list(color="transparent")
-        v-list-item(v-for="(follower, i) in followers", :key="i", @click="$router.push({path: '/u/' + follower.name})")
+        v-list-item(v-for="(follower, i) in followers", :key="i", @click="toUser(follower)")
             v-list-item-avatar
                 v-avatar(size="32")
                     v-img(:src="follower.avatar")
@@ -21,6 +21,13 @@ export default {
     computed: {
         followers() {
             return this.$store.state.auth.user.following
+        }
+    },
+
+    methods: {
+        toUser(follower) {
+            this.$router.push({path: '/u/' + follower.name})
+            this.$emit('back')
         }
     }
 

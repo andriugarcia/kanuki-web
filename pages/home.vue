@@ -4,13 +4,15 @@
             v-layout.ma-3(v-if="user", align-center)
                 v-avatar
                     v-img(:src="user.avatar")
-                .font-weight-bold.ml-2 u/{{user.name}}
+                .font-weight-bold u/{{user.name}}
                 v-spacer
-                v-btn(icon, color="kred")
-                    v-icon mdi-magnify
-            masonry.mt-4(:cols="{default: 2, 960: 1}")
+                v-btn(text, rounded, color="kred", @click="$router.push({path: '/s'})")
+                    v-icon mdi-compass-outline
+                    .font-weight-bold.text-capitalize.ml-1(style="letter-spacing: 0") Descubre
+            masonry(:cols="{default: 2, 960: 1}")
                 post(v-for="(post, i) in timeline", :key="i", :card="post.card || post", :pill="post.pill")
-        v-flex(xs12, md4)
+        v-flex.px-2(xs12, md4, style="padding-top: 72px;")
+            main-column
 </template>
 
 <script>
@@ -20,7 +22,8 @@ import gql from "graphql-tag"
 export default {
     data() {
         return {
-            timeline: []
+            timeline: [],
+            hotPills: []
         }
     },
     async asyncData({store, app}) {
@@ -76,8 +79,23 @@ export default {
 
     },
 
+    async beforeMount() {
+        let client = this.$apollo
+
+        let {data} = await client.query({
+                query: gql`query {
+                    getTopPills(page: 0, limit: 6) {
+                        name,
+                        avatar
+                    }
+                }`
+            })
+            this.hotPills = data.getHotPills
+    },
+
     components: {
-        Post
+        Post,
+        MainColumn: () => import("@/components/MainColumn")
     },
 
     computed: {

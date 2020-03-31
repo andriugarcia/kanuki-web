@@ -1,7 +1,8 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
+//http://kanuki-gql.herokuapp.com/
 
-fetch(`http://kanuki-gql.herokuapp.com/`, {
+fetch(`http://localhost:5000/graphql`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({

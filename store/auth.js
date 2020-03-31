@@ -1,7 +1,9 @@
 import gql from "graphql-tag"
 
 export const state = () => ({
-    user: {}
+    user: {},
+    logged: false,
+    subscribed: false
   })
   
   export const mutations = {
@@ -11,6 +13,18 @@ export const state = () => ({
 
     mergeUser (state, atr) {
       Object.assign(state.user, atr)
+    },
+
+    signed(state) {
+      state.logged = true
+    },
+
+    logout(state) {
+      state.logged = false
+    },
+
+    subscribe(state, data) {
+      state.subscribed = data
     }
   }
 
@@ -32,27 +46,30 @@ export const state = () => ({
     
       await this.app.$apolloHelpers.onLogin(data.login)
       context.dispatch("getUser", {user, pass})
+      context.commit("signed")
     },
-
+    
     async register(context, {user, email, pass}) {
       let client = this.app.apolloProvider.defaultClient
-
+      
       let {data} = await client.mutate({
         mutation: gql`mutation Register($user: String!, $email: String!, $pass: String!) {
           register(name: $user, email: $email, password: $pass)
         }`,
-
+        
         variables: {
           user, email, pass
         }
-
+        
       })
+      context.commit("signed")
     },
-
+    
     async logout (context) {
       this.app.$apolloHelpers.onLogout()
       context.commit("setUser", {})
       context.dispatch("setCookie", {user: "", pass: ""})
+      context.commit("logout")
     },
 
     async authenticate (context) {
@@ -146,13 +163,13 @@ export const state = () => ({
               card {
                 name
               }
-            }
+            },
             likes {
               name
-            }
+            },
             followingPills {
               name, avatar
-            }
+            },
             adminInPills {
               name, avatar
             }

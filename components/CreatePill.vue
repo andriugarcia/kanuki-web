@@ -6,7 +6,7 @@
             .overline.ml-2 Crear Comunidad
         v-text-field(placeholder="pill", v-model="title", :error-messages="exists ? 'Ya existe una pill con ese nombre' : ''")
             v-chip.font-weight-bold(slot="prepend", dark, small, color="kred") p/
-            v-btn.font-weight-bold(slot="append-outer", @click="create", rounded, small, dark, color="kblue") Crear
+            v-btn.font-weight-bold(slot="append-outer", @click="create", rounded, small, dark, color="kred") Crear
 </template>
 
 <script>

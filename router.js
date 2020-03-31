@@ -6,6 +6,8 @@ import Pill from '~/pages/pill'
 import Card from '~/pages/card'
 import User from '~/pages/user'
 import Search from '~/pages/search'
+import Discover from '~/pages/discover'
+import Categorie from '~/pages/categorie'
 
 Vue.use(Router)
 
@@ -41,13 +43,23 @@ export function createRouter() {
       {
         name: "Discover",
         path: '/s',
-        component: Search
+        component: Discover
+      },
+      {
+        name: "Discover",
+        path: '/c',
+        component: Discover
+      },
+      {
+        name: "Categorie",
+        path: '/c/:categorie',
+        component: Categorie
       },
       {
         name: "Search",
         path: '/s/:search',
         component: Search
-      },
+      }
 
     ]
   })

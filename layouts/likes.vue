@@ -2,7 +2,7 @@
   #likes
     v-progress-circular(v-if="loading", indeterminate, color="blue")
     div(v-else)
-      post(v-for="(card, i) in likes", :key="i", :card="card")
+      post(v-for="(card, i) in likes", :key="i", :card="card", @click="$emit('back')")
 </template>
 
 <script>

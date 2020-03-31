@@ -14,7 +14,10 @@ import { createStore } from './store.js'
 
 import nuxt_plugin_workbox_15552501 from 'nuxt_plugin_workbox_15552501' // Source: ./workbox.js (mode: 'client')
 import nuxt_plugin_nuxticons_55ac3343 from 'nuxt_plugin_nuxticons_55ac3343' // Source: ./nuxt-icons.js (mode: 'all')
+import nuxt_plugin_onesignal_c3695fe6 from 'nuxt_plugin_onesignal_c3695fe6' // Source: ./onesignal.js (mode: 'client')
 import nuxt_plugin_plugin_66822a82 from 'nuxt_plugin_plugin_66822a82' // Source: ./vuetify/plugin.js (mode: 'all')
+import nuxt_plugin_pluginrouting_06f2cf81 from 'nuxt_plugin_pluginrouting_06f2cf81' // Source: ./nuxt-i18n/plugin.routing.js (mode: 'all')
+import nuxt_plugin_pluginmain_4a1f338e from 'nuxt_plugin_pluginmain_4a1f338e' // Source: ./nuxt-i18n/plugin.main.js (mode: 'all')
 import nuxt_plugin_apollomodule_9d89881e from 'nuxt_plugin_apollomodule_9d89881e' // Source: ./apollo-module.js (mode: 'all')
 import nuxt_plugin_router_3d2fcb2a from 'nuxt_plugin_router_3d2fcb2a' // Source: ./router.js (mode: 'all')
 import nuxt_plugin_masonry_18e5320f from 'nuxt_plugin_masonry_18e5320f' // Source: ../plugins/masonry (mode: 'all')
@@ -184,8 +187,20 @@ async function createApp (ssrContext) {
     await nuxt_plugin_nuxticons_55ac3343(app.context, inject)
   }
 
+  if (process.client && typeof nuxt_plugin_onesignal_c3695fe6 === 'function') {
+    await nuxt_plugin_onesignal_c3695fe6(app.context, inject)
+  }
+
   if (typeof nuxt_plugin_plugin_66822a82 === 'function') {
     await nuxt_plugin_plugin_66822a82(app.context, inject)
+  }
+
+  if (typeof nuxt_plugin_pluginrouting_06f2cf81 === 'function') {
+    await nuxt_plugin_pluginrouting_06f2cf81(app.context, inject)
+  }
+
+  if (typeof nuxt_plugin_pluginmain_4a1f338e === 'function') {
+    await nuxt_plugin_pluginmain_4a1f338e(app.context, inject)
   }
 
   if (typeof nuxt_plugin_apollomodule_9d89881e === 'function') {

@@ -2,6 +2,10 @@ import colors from 'vuetify/es5/util/colors'
 
 export default {
   mode: 'universal',
+
+  server: {     
+    host: '0.0.0.0', // default: localhost   
+  }, 
   /*
   ** Headers of the page
   */
@@ -68,9 +72,40 @@ export default {
   ** Nuxt.js modules
   */
   modules: [
+    '@nuxtjs/onesignal',
     '@nuxtjs/pwa',
-    '@nuxtjs/apollo'
+    '@nuxtjs/apollo',
+    'nuxt-express-module',
+    ['nuxt-i18n', {
+      locales: [
+        {
+          name: 'Espaniol',
+          code: 'es',
+          iso: 'es-ES',
+          file: 'es-ES.js'
+        },
+        {
+          name: 'English',
+          code: 'en',
+          iso: 'en-US',
+          file: 'en-US.js'
+        },
+      ],
+      langDir: 'lang/',
+      lazy: true,
+      defaultLocale: 'es',
+    }]
   ],
+
+  oneSignal: {
+    init: {
+      appId: 'ec3da237-a499-423e-8a18-df2a38e6bbe1',
+      allowLocalhostAsSecureOrigin: true,
+      welcomeNotification: {
+          disable: true
+      }
+    }
+  },
   /*
   ** vuetify module configuration
   ** https://github.com/nuxt-community/vuetify-module

@@ -275,7 +275,8 @@ describe('VDialog.ts', () => {
     expect(wrapper.vm.isActive).toBe(true)
     await wrapper.vm.$nextTick()
     expect(input).toHaveBeenCalledWith(true)
-    wrapper.vm.closeConditional(new Event('click'))
+
+    wrapper.vm.onClickOutside(new Event('click'))
     expect(clickOutside).toHaveBeenCalled()
   })
 
@@ -300,7 +301,9 @@ describe('VDialog.ts', () => {
   })
 
   it('should only set tabindex if active', () => {
-    const wrapper = mountFunction()
+    const wrapper = mountFunction({
+      propsData: { eager: true },
+    })
 
     const content = wrapper.find('.v-dialog__content')
 
@@ -340,7 +343,8 @@ describe('VDialog.ts', () => {
     expect(wrapper.vm.isActive).toBe(true)
     await wrapper.vm.$nextTick()
     expect(input).toHaveBeenCalledWith(true)
-    wrapper.vm.closeConditional(new Event('click'))
+
+    wrapper.vm.onClickOutside(new Event('click'))
     expect(clickOutside).toHaveBeenCalled()
     expect(wrapper.vm.isActive).toBe(true)
   })
