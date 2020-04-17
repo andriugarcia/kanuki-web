@@ -1,7 +1,7 @@
 <template lang="pug">
     #Components
         transition-group(name="list-complete", tag="div", :class="{'elevation-3': !edit && !isMiniature}")
-            .list-complete-item(v-for="(el, i) in content", :key="el.id", :class="{'mb-2': edit}")
+            div(v-for="(el, i) in content", :key="el.id", :class="{'mb-2': edit, 'list-complete-item': !isMiniature}")
                 v-sheet(@click="selected = i", color="white", :class="{'elevation-3': edit}")
                     v-layout.px-2(v-if="edit", justify-space-between, align-center, :style="i == 0 ? 'background-color: #FFC441' : ''")
                         v-flex(xs4)

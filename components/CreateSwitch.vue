@@ -28,7 +28,7 @@ export default {
     data() {
         return {
             routing: "",
-            defaultOptions: {animationData: animationData, loop: false},
+            defaultOptions: {animationData: animationData},
         }
     },
     methods: {
